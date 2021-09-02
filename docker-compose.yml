@@ -1,0 +1,78 @@
+version: '3.6'
+
+services:
+  db:
+    image: mariadb
+    restart: always
+    networks: 
+      - devnet
+    environment:
+      MYSQL_DATABASE: wordydb
+      MYSQL_USER: wordyuser
+      MYSQL_PASSWORD: wordypass
+      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+
+  wordpress:
+    depends_on:
+      - db
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    networks:
+      - devnet
+    ports:
+      - 8080:80
+    volumes:
+      - ./html:/var/www/html
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: wordyuser
+      WORDPRESS_DB_PASSWORD: wordypass
+      WORDPRESS_DB_NAME: wordydb
+      WORDPRESS_TABLE_PREFIX: ${PROD_DB_PREFIX}
+  
+  wpcli:
+    depends_on:
+      - wordpress
+      - db
+    image: wordpress:cli
+    networks: 
+      - devnet
+    volumes_from:
+      - wordpress
+    tty: true
+    environment: 
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: wordyuser
+      WORDPRESS_DB_PASSWORD: wordypass
+      WORDPRESS_DB_NAME: wordydb
+      WORDPRESS_TABLE_PREFIX: ${PROD_DB_PREFIX}
+
+  phpmyadmin:
+    depends_on:
+      - db
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - 9090:80
+    restart: always
+    networks:
+      - devnet
+    environment:
+      PMA_HOST: db
+
+  wordmove:
+    depends_on: 
+      - wordpress
+      - db
+    image: welaika/wordmove
+    restart: on-failure:5
+    networks:
+      - devnet
+    tty: true
+    volumes: 
+      - ~/.ssh:/tmp/.ssh:ro
+      - ./html:/html
+
+networks: 
+  devnet:

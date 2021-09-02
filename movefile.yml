@@ -1,0 +1,98 @@
+global:
+  sql_adapter: default
+
+local:
+  vhost: http://localhost:8080
+  wordpress_path: /html # use an absolute path here.
+
+  database:
+    name: wordydb
+    user: wordyuser
+    password: "wordypass" # could be blank, so always use quotes around.
+    host: "db"
+
+production:
+  vhost: http://example.com # change this to product url.
+  wordpress_path: "<%= ENV['PROD_SITE_PATH'] %>"
+
+  database:
+    name: "<%= ENV['PROD_DB_NAME'] %>"
+    user: "<%= ENV['PROD_DB_USER'] %>"
+    password: "<%= ENV['PROD_DB_PASS'] %>"
+    host: localhost
+    # port: 3308 # Use just in case you have exotic server config.
+    # mysqldump_options: '--max_allowed_packet=1G' # Only available if using SSH.
+    # mysql_options: '--protocol=TCP' # mysql command is used to import db.
+
+  exclude:
+    - '.git/'
+    - '.gitignore'
+    - '.gitmodules'
+    - '.env'
+    - 'node_modules/'
+    - 'bin/'
+    - 'tmp/*'
+    - 'Gemfile*'
+    - 'Movefile'
+    - 'movefile'
+    - 'movefile.yml'
+    - 'movefile.yaml'
+    - 'wp-config.php'
+    - 'wp-content/*.sql.gz'
+    - '*.orig'
+
+  # paths: # you can customize wordpress internal paths.
+  #   wp_content: wp-content
+  #   uploads: wp-content/uploads
+  #   plugins: wp-content/plugins
+  #   mu_plugins: wp-content/mu-plugins
+  #   themes: wp-content/themes
+  #   languages: wp-content/languages
+
+  ssh:
+    host: "<%= ENV['PROD_SSH_HOST'] %>"
+    user: "<%= ENV['PROD_SSH_USER'] %>"
+  #   password: password # password is optional, will use public keys if available.
+  #   port: 22 # Port is optional.
+  #   rsync_options: '--verbose --itemize-changes' # Additional rsync options, optional.
+  #   gateway: # Gateway is optional.
+  #     host: host
+  #     user: user
+  #     password: password # password is optional, will use public keys if available.
+
+  # hooks: # Remote hooks won't work with FTP.
+  #   push:
+  #     before:
+  #       - command: 'echo "do something"'
+  #         where: local
+  #         raise: false # raise is true by default.
+  #     after:
+  #       - command: 'echo "do something"'
+  #         where: remote
+  #   pull:
+  #     before:
+  #       - command: 'echo "do something"'
+  #         where: local
+  #         raise: false
+  #     after:
+  #       - command: 'echo "do something"'
+  #         where: remote
+  #
+  # forbid:
+  #   push:
+  #     db: false
+  #     plugins: false
+  #     themes: false
+  #     languages: false
+  #     uploads: false
+  #     mu-plugins: false
+  #   pull:
+  #     db: false
+  #     plugins: false
+  #     themes: false
+  #     languages: false
+  #     uploads: false
+  #     mu-plugins: false
+
+# staging: # multiple environments can be specified
+#   [...]
